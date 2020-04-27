@@ -7,6 +7,7 @@ var path = require("path");
 const util = require("util");
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
+const dbUrl = "./db/db.json";
 
 // ===============================================================================
 // ROUTING
@@ -15,7 +16,7 @@ const writeFileAsync = util.promisify(fs.writeFile);
 module.exports = (app) => {
 
     app.get("/api/notes", (req, res) => {
-        readFileAsync("./db/db.json", "utf8")
+        readFileAsync(dbUrl, "utf8")
             .then((data) => {
                 if (data) {
                     const notes = JSON.parse(data);
@@ -30,46 +31,50 @@ module.exports = (app) => {
     app.post("/api/notes", (req, res) => {
         const notes = []; // notes array acts as a buffer
         let note;
-        readFileAsync("./db/db.json", "utf8")
+        readFileAsync(dbUrl, "utf8")
             .then((data) => {
                 if (data) { // if any note exists
                     const jsonFormatted = JSON.parse(data);
-                    let id = jsonFormatted[jsonFormatted.length - 1].id;
+                    jsonFormatted.forEach(element => notes.push(element)); // adds existing notes to the array
+
+                    let id = jsonFormatted[jsonFormatted.length - 1].id; // gets the latest id
+
                     note = req.body;
                     note.id = ++id;
-                    jsonFormatted.forEach(element => notes.push(element)); // adds existing notes to the array
+                    console.log(note)
                 }
                 else { // if no notes exist
                     note = req.body;
                     note.id = 1;
                 }
                 notes.push(note); // adds the new note to the array
+                let notesJSON = updateDb(notes);
+                res.json(notesJSON);
             })
             .catch(err => console.log(`Error: ${err}`));
-
-        const notesJSON = JSON.stringify(notes, null, 2);
-        writeFileAsync("./db/db.json", notesJSON);
-        res.json(notesJSON);
     });
 
     app.delete("/api/delete/:id", (req, res) => {
         let id = req.params.id;
-
-        readFileAsync("./db/db.json", "utf8")
+        const notes = new Array();
+        readFileAsync(dbUrl, "utf8")
             .then((data) => {
                 if (data) { // if any note exists
                     const jsonFormatted = JSON.parse(data);
-                    delete jsonFormatted[id];
-
-                    return console.log("Note was deleted successfully!");
+                    jsonFormatted.forEach(item => {
+                        if (item.id !== parseInt(id)) notes.push(item);
+                    });
+                    updateDb(notes);
+                    res.json(`note with id: ${id} was deleted successfully!`);
                 }
             })
             .catch(err => console.log(`Error: ${err}`));
     });
 
-    function findById(array, id) {
-        array.forEach(item => {
-            if (item.id === id) return array.indexOf(item);
-        });
+    function updateDb(notes) {
+        const notesJSON = JSON.stringify(notes, null, 2);
+        writeFileAsync(dbUrl, notesJSON);
+        console.log("Note was updated successfully!")
+        return notesJSON;
     }
 }
