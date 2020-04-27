@@ -54,16 +54,22 @@ module.exports = (app) => {
 
     app.delete("/api/delete/:id", (req, res) => {
         let id = req.params.id;
-        // async for delete
-        fs.readFile("../db/db.json", 'utf8', (err, data) => {
-            data = JSON.parse(data);
 
-            delete data[id];
+        readFileAsync("./db/db.json", "utf8")
+            .then((data) => {
+                if (data) { // if any note exists
+                    const jsonFormatted = JSON.parse(data);
+                    delete jsonFormatted[id];
 
-            console.log(JSON.stringify(data));
-            res.status(200);
-
-            return res.send("Removed");
-        });
+                    return console.log("Note was deleted successfully!");
+                }
+            })
+            .catch(err => console.log(`Error: ${err}`));
     });
+
+    function findById(array, id) {
+        array.forEach(item => {
+            if (item.id === id) return array.indexOf(item);
+        });
+    }
 }
