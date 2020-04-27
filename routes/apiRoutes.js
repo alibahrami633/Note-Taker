@@ -15,6 +15,9 @@ const dbUrl = "./db/db.json";
 
 module.exports = (app) => {
 
+    // ---------------------------------------------------------------------------
+    // GET
+    // ---------------------------------------------------------------------------
     app.get("/api/notes", (req, res) => {
         readFileAsync(dbUrl, "utf8")
             .then((data) => {
@@ -27,6 +30,9 @@ module.exports = (app) => {
     });
 
 
+    // ---------------------------------------------------------------------------
+    // POST
+    // ---------------------------------------------------------------------------
     // Gets the latest id from DB file and adds 1 to it for the new inserted data (note)
     app.post("/api/notes", (req, res) => {
         const notes = []; // notes array acts as a buffer
@@ -48,24 +54,30 @@ module.exports = (app) => {
                     note.id = 1;
                 }
                 notes.push(note); // adds the new note to the array
-                let notesJSON = updateDb(notes);
-                res.json(notesJSON);
+                updateDb(notes);
+                res.json("Note was updated successfully!");
             })
             .catch(err => console.log(`Error: ${err}`));
     });
 
-    app.delete("/api/delete/:id", (req, res) => {
+    // ---------------------------------------------------------------------------
+    // DELETE
+    // ---------------------------------------------------------------------------
+    app.delete("/api/notes/:id", (req, res) => {
         let id = req.params.id;
         const notes = new Array();
         readFileAsync(dbUrl, "utf8")
             .then((data) => {
                 if (data) { // if any note exists
                     const jsonFormatted = JSON.parse(data);
-                    jsonFormatted.forEach(item => {
-                        if (item.id !== parseInt(id)) notes.push(item);
-                    });
-                    updateDb(notes);
-                    res.json(`note with id: ${id} was deleted successfully!`);
+                    if (jsonFormatted.length > 2) {
+                        jsonFormatted.forEach(item => {
+                            if (item.id !== parseInt(id)) notes.push(item);
+                        });
+                        updateDb(notes);
+                        res.json(`note with id: ${id} was deleted successfully!`);
+                    }
+                    else res.json("empty database.");
                 }
             })
             .catch(err => console.log(`Error: ${err}`));
