@@ -1,49 +1,56 @@
 // ===============================================================================
 // LOAD DATA
-// We are linking our routes to a series of "data" sources.
-// These data sources hold arrays of information on table-data, waitinglist, etc.
 // ===============================================================================
 
 const fs = require("fs");
-
-let rawdata = fs.readFileSync("./db/db.json"); // sync for get and post
-let notes = JSON.parse(rawdata);
-// console.log(notes);
-
+var path = require("path");
+const util = require("util");
+const readFileAsync = util.promisify(fs.readFile);
+const writeFileAsync = util.promisify(fs.writeFile);
 
 // ===============================================================================
 // ROUTING
 // ===============================================================================
 
 module.exports = (app) => {
-    // API GET Requests
-    // Below code handles when users "visit" a page.
-    // In each of the below cases when a user visits a link
-    // (ex: localhost:PORT/api/admin... they are shown a JSON of the data in the table)
-    // ---------------------------------------------------------------------------
 
     app.get("/api/notes", (req, res) => {
-        res.json(notes);
+        readFileAsync("./db/db.json", "utf8")
+            .then((data) => {
+                if (data) {
+                    const notes = JSON.parse(data);
+                    return res.json(notes);
+                }
+            })
+            .catch(err => console.log(`Error: ${err}`));
     });
 
-    // API POST Requests
-    // Below code handles when a user submits a form and thus submits data to the server.
-    // In each of the below cases, when a user submits form data (a JSON object)
-    // ...the JSON is pushed to the appropriate JavaScript array
-    // (ex. User fills out a reservation request... this data is then sent to the server...
-    // Then the server saves the data to the tableData array)
-    // ---------------------------------------------------------------------------
 
+    // Gets the latest id from DB file and adds 1 to it for the new inserted data (note)
     app.post("/api/notes", (req, res) => {
-        // Note the code here. Our "server" will respond to requests and let users know if they have a table or not.
-        // req.body is available since we're using the body parsing middleware
-        notes.push(req.body);
-        res.json(true);
-    });
+        const notes = []; // notes array acts as a buffer
+        let note;
+        readFileAsync("./db/db.json", "utf8")
+            .then((data) => {
+                if (data) { // if any note exists
+                    const jsonFormatted = JSON.parse(data);
+                    let id = jsonFormatted[jsonFormatted.length - 1].id;
+                    note = req.body;
+                    note.id = ++id;
+                    jsonFormatted.forEach(element => notes.push(element)); // adds existing notes to the array
+                }
+                else { // if no notes exist
+                    note = req.body;
+                    note.id = 1;
+                }
+                notes.push(note); // adds the new note to the array
+            })
+            .catch(err => console.log(`Error: ${err}`));
 
-    // ---------------------------------------------------------------------------
-    // I added this below code so you could clear out the table while working with the functionality.
-    // Don"t worry about it!
+        const notesJSON = JSON.stringify(notes, null, 2);
+        writeFileAsync("./db/db.json", notesJSON);
+        res.json(notesJSON);
+    });
 
     app.delete("/api/delete/:id", (req, res) => {
         let id = req.params.id;
