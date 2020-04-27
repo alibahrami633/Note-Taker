@@ -6,7 +6,7 @@
 
 const fs = require("fs");
 
-let rawdata = fs.readFileSync("../db/db.json"); // sync for get and post
+let rawdata = fs.readFileSync("./db/db.json"); // sync for get and post
 let notes = JSON.parse(rawdata);
 // console.log(notes);
 
