@@ -23,11 +23,7 @@
 ## How to Use
 <hr/>
     <p>
-        The user entry for searching for now is set to Australian cities. In the future development, a country field will be added to the user's choices.
-        Users can either type the name of the city to search for the current weather and the next five days of that particular city.
-        There is a search history list where a user can find the history of their previous search. The data is kept in the local storage. 
-        By clicking on each item of the search history, user can retreive the current weather data and the next five days forecast. 
-        UV index background color will change based on the intensity of UV 0-2 as light, 3-5 as moderate, 6-7 as intense, 8-10 very intense. 
+        The user entry can simply click on the main button in the middle of the page and will be redirected to "Add Note" page. Then they can add new note, remove or review the existing note from the list on the left side of the page.
     </p>
 <hr/>
 <br>
@@ -36,8 +32,29 @@
 ## Installation Guide
 <hr/>
     <p>
-        This application does not have any database, therefore, simply download the whole folder and run it on a local computer or any server.
-        The app shows search history based on the local storage of the computer which is being used.        
+        To install a local instance of the application, follow the steps below:
+
+        Node.js
+        This application needs Node.js to execute. To install Node.js, run the appropriate installer from https://nodejs.org/en/download/ and follow the prompts to complete the installation.
+
+        Clone this repo
+        Clone this repo through git bash to your local computer using:
+
+        git clone `git@github.com:alibahrami633/Note-Taker.git`
+        Install packages
+        You will also need to install the express npm package to your environment.
+
+        Browse to the folder where you cloned the Repo and install the package:
+
+        $ npm install 
+        Start the server
+        To run the server, browse to the local folder where you cloned the Repo and execute
+
+        $ npm start 
+        The server should now start executing.
+
+        Open the Website
+        Browse to http://localhost:{PORT(the defualt port you set)} to view the application website.
     </p>
 <hr/>
 <br>
@@ -53,17 +70,17 @@
 <br>
 
 
-<img src="https://github.com/alibahrami633/WeatherDashboard/blob/master/assets/screenshot01.png" alt="deployed application image" />
+<img src="https://github.com/alibahrami633/Note-Taker/blob/master/public/assets/images/01.png" alt="deployed application image" />
 
 <hr />
 <br>
 
-<img src="https://github.com/alibahrami633/WeatherDashboard/blob/master/assets/screenshot02.png" alt="deployed application image" />
+<img src="https://github.com/alibahrami633/Note-Taker/blob/master/public/assets/images/02.png" alt="deployed application image" />
 
 <hr />
 <br>
 
-<img src="https://github.com/alibahrami633/WeatherDashboard/blob/master/assets/screenshot03.png" alt="deployed application image" />
+<img src="https://github.com/alibahrami633/Note-Taker/blob/master/public/assets/images/03.png" alt="deployed application image" />
 
 <hr />
 
