@@ -43,7 +43,8 @@ module.exports = (app) => {
                     const jsonFormatted = JSON.parse(data);
                     jsonFormatted.forEach(element => notes.push(element)); // adds existing notes to the array
 
-                    let id = jsonFormatted[jsonFormatted.length - 1].id; // gets the latest id
+                    let id;
+                    (jsonFormatted.length === 0) ? id = 0 : id = jsonFormatted[jsonFormatted.length - 1].id; // gets the latest id
 
                     note = req.body;
                     note.id = ++id;
@@ -70,7 +71,7 @@ module.exports = (app) => {
             .then((data) => {
                 if (data) { // if any note exists
                     const jsonFormatted = JSON.parse(data);
-                    if (jsonFormatted.length > 2) {
+                    if (jsonFormatted.length > 0) {
                         jsonFormatted.forEach(item => {
                             if (item.id !== parseInt(id)) notes.push(item);
                         });
